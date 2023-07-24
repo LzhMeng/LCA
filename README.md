@@ -9,7 +9,7 @@
 [Wangmeng Zuo]
 <br/>
 _Underview |
-[GitHub](https://github.com/n) | [Project page](https://)_
+[GitHub](https://github.com/LzhMeng/LCA) | [Project page](https://)_
 
 ![Pipeline](assets/Pipeline.png)
 ### Abstract ###
@@ -35,11 +35,11 @@ Extensive experiments demonstrate that our LCA achieves higher attack success ra
 requires fewer query budgets compared to GANs-based schemes for different target models.
 
 - To the best of our knowledge, we are the first to use diffusion model to improve the performance of 
-- data-free black-box attacks, making substitute training more efficient and achieving higher attack success rates.
+  data-free black-box attacks, making substitute training more efficient and achieving higher attack success rates.
 - We propose LCA to further facilitate the diffusion model to generate images that are more suitable for 
-- the target network.
+  the target network.
 - The experimental results demonstrate the superiority of our LCA in terms of attack success rates and 
-- query efficiency across different target networks trained on various training sets.
+  query efficiency across different target networks trained on various training sets.
 - It is based on pretrained [Stable Diffusion](https://github.com/CompVis/latent-diffusion).
 
 ## Requirements
