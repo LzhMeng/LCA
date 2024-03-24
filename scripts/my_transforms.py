@@ -51,7 +51,6 @@ class AddGaussianNoise(object):
         N = np.repeat(N, c, axis=1).astype(np.float32)
         N = self.amplitude*N
         img = torch.from_numpy(N).cuda() + img
-        # img = Image.fromarray(img.astype('uint8')).convert('RGB')
         return img
 
 class CutMix(object):
@@ -64,11 +63,9 @@ class CutMix(object):
         cut_rat = np.sqrt(1. - lam)
         cut_w = int(W * cut_rat)
         cut_h = int(H * cut_rat)
-
         # uniform
         cx = np.random.randint(W)
         cy = np.random.randint(H)
-
         bbx1 = np.clip(cx - cut_w // 2, 0, W)
         bby1 = np.clip(cy - cut_h // 2, 0, H)
         bbx2 = np.clip(cx + cut_w // 2, 0, W)
@@ -77,20 +74,23 @@ class CutMix(object):
         return bbx1, bby1, bbx2, bby2
 
     def __call__(self, image0,image1):
-        # bs,c , h, w = img.shape
-        # N = np.random.normal(loc=self.mean, scale=self.variance, size=(bs, 1, h, w))
-        # N = np.repeat(N, c, axis=1).astype(np.float32)
-        # img = torch.from_numpy(N).cuda() + img
-        # img = Image.fromarray(img.astype('uint8')).convert('RGB')
-
         # generate mixed sample
         lam = np.random.beta(self.beta, self.beta)
-        # rand_index = torch.randperm(image0.size()[0]).cuda()
-        # labels_a = labels
-        # labels_b = labels[rand_index]
         bbx1, bby1, bbx2, bby2 = self.rand_bbox(image0.size(), lam)
         image0[:, :, bbx1:bbx2, bby1:bby2] = image1[:, :, bbx1:bbx2, bby1:bby2]
-        # adjust lambda to exactly match pixel ratio
-        # lam = 1 - ((bbx2 - bbx1) * (bby2 - bby1) / (images.size()[-1] * images.size()[-2]))
-
         return image0,lam
+
+class RICAP(object):
+    def __init__(self, beta=0.0):
+        self.beta = beta
+
+    def __call__(self, image0,image1,image2,image3):
+        W = image0.size()[2]
+        H = image0.size()[3]
+        cx = np.random.randint(W)
+        cy = np.random.randint(H)
+        image0[:, :, 0:cx, cy:] = image1[:, :, 0:cx, cy:end]
+        image0[:, :, cx:, 0:cy] = image2[:, :, cx:, 0:cy]
+        image0[:, :, cx:, cy:] = image3[:, :, cx:, cy:]
+
+        return image0

@@ -16,19 +16,6 @@ dataset='cifar10' # STL10 cifar10
 
 import torchvision.transforms as tfs
 
-if dataset == "cifar10":
-    transforms = tfs.Compose(
-            [tfs.Resize(32), tfs.ToTensor()]
-        )
-    test_loader = torch.utils.data.DataLoader(
-        datasets.CIFAR10(root='../../Data/cifar10/', train=False,
-                         download=True,
-                         transform=transforms
-                         ),
-        batch_size=32,
-        shuffle=True,
-    )
-
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
     pl_sd = torch.load(ckpt, map_location="cpu")
@@ -116,24 +103,27 @@ def mixup_data(x_s, alpha=1.0):
     if batch_size == 1:
         return x_s
     random_mix = random.randint(0, 1)
-    if random_mix == 0:
-        index0 = np.random.randint(0, batch_size-1)
-        random_mix = random.randint(0, 1)
-        if random_mix==0:
-            a = train_transforms(x_s[index0:index0+1],[random.randint(0, 10)])
-        else:
-            a = train_transforms(x_s[index0:index0+1])
+
+    index0 = np.random.randint(0, batch_size - 1)
+    a = train_transforms(x_s[index0:index0+1])
+    if random_mix == 0:#single-data augmentation
         mixed_x = a
-    else:
-        index0 = np.random.randint(0, batch_size-1)
+    else:#multi-data augmentation
         index1 = np.random.randint(0, batch_size-1)
-        a = train_transforms(x_s[index0:index0+1])
         b = train_transforms(x_s[index1:index1+1])
-        random_mix = random.randint(0, 1)
-        if random_mix == 0:
+        random_mix = random.randint(0, 2)
+        if random_mix == 0:# MixUp
             mixed_x = lam * a + (1 - lam) * b
-        elif random_mix ==1:
+        elif random_mix ==1:# CutMix
             mixed_x, lam = CutMix(1.0)(a, b)
+        elif random_mix ==2:# RICAP
+            index1 = np.random.randint(0, batch_size-1)
+            b = train_transforms(x_s[index1:index1+1])
+            index2 = np.random.randint(0, batch_size-1)
+            c = train_transforms(x_s[index2:index2+1])
+            index3 = np.random.randint(0, batch_size-1)
+            d = train_transforms(x_s[index3:index3+1])
+            mixed_x = RICAP()(a, b, c, d)
     return mixed_x
 
 def main(opt):

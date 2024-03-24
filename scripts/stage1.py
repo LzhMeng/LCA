@@ -2,6 +2,10 @@ import argparse, os
 import torch
 from torch import nn
 import numpy as np
+from transformers import CLIPTokenizer
+
+tokenizer = CLIPTokenizer.from_pretrained("openai/clip-vit-large-patch14")
+
 from omegaconf import OmegaConf
 from PIL import Image
 from einops import rearrange
@@ -23,14 +27,6 @@ import torch.nn.functional as F
 if dataset == "cifar10":
     transforms = tfs.Compose(
         [tfs.Resize(32), tfs.ToTensor()]
-    )
-    test_loader = torch.utils.data.DataLoader(
-        datasets.CIFAR10(root='../../Data/cifar10/', train=False,
-                         download=True,
-                         transform=transforms
-                         ),
-        batch_size=32,
-        shuffle=True,
     )
 
 def add_noise(x,stddev=0.025):
@@ -125,6 +121,7 @@ def main(opt):
     save_num = 10 # length of codebook
     codebooks = [[] for _ in classnames] # init
 
+    # load target net
     from models.resnet import resnet34
     original_net = resnet34(10).cuda()
     state_dict = torch.load(opt.classify_model)
@@ -163,6 +160,7 @@ def main(opt):
                     AllQuery+=1
                 if label1 == class_id and prob>0.8:
                     with torch.no_grad():
+                        # Member inference
                         adv_img = add_noise(img, 0.05)
                         outputs2 = original_net(adv_img)
                         outputs2 = F.softmax(outputs2, dim=1)
@@ -176,7 +174,7 @@ def main(opt):
                         if len(class_codebook) < save_num:  # delete out data(bad)
                             img0.save(os.path.join(save_class_path, f"{epoch}_{base_count:04}.png"))
                             class_codebook.append([MIA.item(), init_latent, f"{epoch}_{base_count:04}.png"])
-                        else:
+                        else:# save latent code
                             img0.save(os.path.join(save_class_path, f"{epoch}_{base_count:04}.png"))
                             class_codebook.append([MIA.item(), init_latent, f"{epoch}_{base_count:04}.png"])
                             class_codebook = sorted(class_codebook,key=lambda x:x[0])  # sort codebook
