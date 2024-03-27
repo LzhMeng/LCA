@@ -60,7 +60,7 @@ In order to keep the scheme basic, we use the most basic version of the model:
 In the first stage, we employ **Membership Inference (MI)** to identify samples that are most likely to belong to the member data of target model. 
 Then, these samples are encoded and stored into the **codebook**.
 
-After \[obtaining the `stable-diffusion-v1-1-1-original` weights\](#weights), link them
+After obtaining the `stable-diffusion-v1-1-1-original` weights (#weights), link them
 ```
 mkdir -p models/ldm/stable-diffusion-v1/
 ln <path/to/model.ckpt> models/ldm/stable-diffusion-v1/model.ckpt 
