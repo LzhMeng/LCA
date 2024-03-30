@@ -2,11 +2,7 @@
 *This project is the main code for LCA, more details will be published when the article is accepted.*
 
 [**Latent Code Augmentation based on Diffusion Model for Data-free Substitute Attacks**](https://arxiv.org/abs/2307.12872)<br/>
-[Mingwen Shao],
-[Lingzhuang Meng]*,
-[Yuanjian Qiao],
-[Lixu Zhang],
-[Wangmeng Zuo]
+Anonymous Submission
 <br/>
 _Underview |
 [GitHub](https://github.com/LzhMeng/LCA) | [Project page](https://)_
@@ -104,7 +100,7 @@ traditional data augmentation techniques.
 ```
 @misc{LCA2023datafree,
       title={Latent Code Augmentation based on Diffusion Model for Data-free Substitute Attacks}, 
-      author={Mingwen Shao and Lingzhuang Meng and Yuanjian Qiao and Lixu Zhang and Wangmeng Zuo},
+      author={Anonymous Submission},
       year={2023},
       eprint={2307.12872},
       archivePrefix={arXiv},
